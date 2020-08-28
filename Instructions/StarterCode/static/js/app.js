@@ -1,7 +1,7 @@
-// create the initial function that will be default
+// create the initial function for the initial data selection
 function init() {
     // selecting dropdown menu
-    var dropdown = d3.select("#selDataset");
+    var newID = d3.select("#selDataset");
 
     // Fetch the JSON data and console log it
     d3.json("samples.json").then(function(data) {
@@ -9,39 +9,44 @@ function init() {
         var names = data.names;
         // inserting a dropdown option for each name id
         names.forEach(function(name) {
-            dropdown.append("option").text(name).property("value");
+            newID.append("option").text(name).property("value");
         });
         var initId = names[0];
 
         // plot the initial bar chart, bubble chart, demographics table, and gauge for the first ID
-        Plot(initId);
+        buildPlot(initId);
         demographics(initId);
         gauge(initId);
     })
 }
 
-// the function that runs on a changed selection
+// create the function for the change event
 function optionChanged(id) {
-    Plot(id);
+    buildPlot(id);
     demographics(id);
     gauge(id);
 }
 
 // create a function that plots the bar chart and the bubble chart 
-function Plot(id) {
+function buildPlot(id) {
     //read the data
     d3.json("samples.json").then(function(data) {
         console.log(data);
         var samples = data.samples
-            // filter samples by the id 
+
+        // filter samples by the id 
         var samples = samples.filter(sampleID => sampleID.id === id)[0];
         console.log(samples)
-            // get only first 10 sample values
+
+        // get only first 10 sample values
         var sampleValues = samples.sample_values.slice(0, 10).reverse();
+
         // get only first 10 otu id's
         var otuIds = samples.otu_ids.slice(0, 10).reverse();
+
         // format "OTU" before each otu ID
         var otuIdslabels = otuIds.map(id_label => "OTU" + id_label);
+
         // get only the first 10 otu labels 
         var sampleLabels = samples.otu_labels.slice(0, 10);
 
